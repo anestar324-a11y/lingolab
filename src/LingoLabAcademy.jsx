@@ -1,5 +1,6 @@
 import { useState, useEffect, useRef } from "react";
 import lingoLabLogo from "./lingolab-logo.jpg";
+import { supabase } from "./supabaseClient";
 import homeData from "./content/home.json";
 import newsData from "./content/news.json";
 import eventsData from "./content/events.json";
@@ -244,8 +245,73 @@ function PlaceholderImg({ w = 400, h = 300, label = "", style: s = {}, gradient 
 /* ════════════════════════════════════════════════════════════════
    PAGE: HOME
    ════════════════════════════════════════════════════════════════ */
+function ReviewForm() {
+  const [form, setForm] = useState({ name: "", role: "Эцэг эх", text: "", stars: 5 });
+  const [status, setStatus] = useState("");
+  const [submitted, setSubmitted] = useState(false);
+
+  const submit = async () => {
+    if (!form.name || !form.text) { setStatus("Нэр болон сэтгэгдэлээ бөглөнө үү."); return; }
+    setStatus("Илгээж байна...");
+    const { error } = await supabase.from("reviews").insert([{ name: form.name, role: form.role, text: form.text, stars: form.stars }]);
+    if (error) { setStatus("Алдаа гарлаа. Дахин оролдоно уу."); return; }
+    setSubmitted(true);
+  };
+
+  if (submitted) return (
+    <div style={{ textAlign: "center", padding: "2rem", background: T.surfaceContainerLowest, borderRadius: T.radius.lg }}>
+      <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>🎉</div>
+      <h4 style={{ fontFamily: "'Lexend'", fontWeight: 700, marginBottom: "0.5rem" }}>Баярлалаа!</h4>
+      <p style={{ fontSize: "0.875rem", color: T.onSurfaceVariant }}>Таны сэтгэгдэл хүлээн авлаа. Шалгасны дараа нийтлэгдэнэ.</p>
+    </div>
+  );
+
+  return (
+    <div style={{ background: T.surfaceContainerLowest, borderRadius: T.radius.lg, padding: "1.75rem" }}>
+      <h4 style={{ fontFamily: "'Lexend'", fontSize: "1rem", fontWeight: 700, marginBottom: "1.25rem" }}>✍️ Сэтгэгдэл үлдээх</h4>
+      <div style={{ display: "grid", gridTemplateColumns: "1fr 1fr", gap: "1rem", marginBottom: "1rem" }}>
+        <div>
+          <label style={{ fontSize: "0.75rem", fontWeight: 600, color: T.onSurfaceVariant, display: "block", marginBottom: "0.35rem" }}>НЭР</label>
+          <input value={form.name} onChange={e => setForm({...form, name: e.target.value})}
+            placeholder="Таны нэр" style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: T.radius.xl, border: "none", background: T.surfaceContainerLow, fontFamily: "'Plus Jakarta Sans'", fontSize: "0.875rem", outline: "none" }} />
+        </div>
+        <div>
+          <label style={{ fontSize: "0.75rem", fontWeight: 600, color: T.onSurfaceVariant, display: "block", marginBottom: "0.35rem" }}>ҮҮРЭГ</label>
+          <input value={form.role} onChange={e => setForm({...form, role: e.target.value})}
+            placeholder="Эцэг эх / Суралцагч" style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: T.radius.xl, border: "none", background: T.surfaceContainerLow, fontFamily: "'Plus Jakarta Sans'", fontSize: "0.875rem", outline: "none" }} />
+        </div>
+      </div>
+      <div style={{ marginBottom: "1rem" }}>
+        <label style={{ fontSize: "0.75rem", fontWeight: 600, color: T.onSurfaceVariant, display: "block", marginBottom: "0.35rem" }}>ОД ⭐</label>
+        <div style={{ display: "flex", gap: "0.5rem" }}>
+          {[1,2,3,4,5].map(s => (
+            <span key={s} onClick={() => setForm({...form, stars: s})}
+              style={{ fontSize: "1.5rem", cursor: "pointer", opacity: s <= form.stars ? 1 : 0.3 }}>★</span>
+          ))}
+        </div>
+      </div>
+      <div style={{ marginBottom: "1rem" }}>
+        <label style={{ fontSize: "0.75rem", fontWeight: 600, color: T.onSurfaceVariant, display: "block", marginBottom: "0.35rem" }}>СЭТГЭГДЭЛ</label>
+        <textarea value={form.text} onChange={e => setForm({...form, text: e.target.value})}
+          placeholder="Таны сэтгэгдэл..." rows={3}
+          style={{ width: "100%", padding: "0.75rem 1rem", borderRadius: T.radius.lg, border: "none", background: T.surfaceContainerLow, fontFamily: "'Plus Jakarta Sans'", fontSize: "0.875rem", outline: "none", resize: "vertical" }} />
+      </div>
+      {status && <p style={{ fontSize: "0.8rem", color: T.onSurfaceVariant, marginBottom: "0.75rem" }}>{status}</p>}
+      <Btn onClick={submit} style={{ padding: "0.75rem 2rem" }}>Илгээх</Btn>
+    </div>
+  );
+}
+
 function HomePage({ onNav }) {
   const { hero, programs, whyUs, testimonials, cta } = homeData;
+  const [liveReviews, setLiveReviews] = useState([]);
+
+  useEffect(() => {
+    supabase.from("reviews").select("*").eq("approved", true).order("created_at", { ascending: false })
+      .then(({ data }) => { if (data) setLiveReviews(data); });
+  }, []);
+
+  const allTestimonials = liveReviews.length > 0 ? liveReviews : testimonials;
   return (
     <div>
       {/* Hero */}
@@ -382,7 +448,7 @@ function HomePage({ onNav }) {
           Эцэг эхчүүдийн сэтгэгдэл
         </h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }}>
-          {testimonials.map((t, i) => (
+          {allTestimonials.map((t, i) => (
             <Card key={i}>
               <div style={{ display: "flex", gap: "0.25rem", marginBottom: "0.75rem" }}>
                 {Array(t.stars).fill(0).map((_, j) => <span key={j} style={{ color: T.secondary, fontSize: "1.1rem" }}>★</span>)}
@@ -401,6 +467,9 @@ function HomePage({ onNav }) {
               </div>
             </Card>
           ))}
+        </div>
+        <div style={{ marginTop: "2.5rem", maxWidth: 600, margin: "2.5rem auto 0" }}>
+          <ReviewForm />
         </div>
       </section>
 

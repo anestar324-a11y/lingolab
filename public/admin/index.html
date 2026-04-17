@@ -79,6 +79,7 @@
       <div class="nav-item" onclick="showTab('news')" id="nav-news">📰 Мэдээ</div>
       <div class="nav-item" onclick="showTab('events')" id="nav-events">🎉 Үйл ажиллагаа</div>
       <div class="nav-item" onclick="showTab('about')" id="nav-about">ℹ️ Бидний тухай</div>
+      <div class="nav-item" onclick="showTab('reviews')" id="nav-reviews">⭐ Сэтгэгдлүүд</div>
     </div>
     <div style="flex:1;overflow-y:auto">
       <div class="content" id="tabContent"></div>
@@ -94,6 +95,8 @@
 const REPO = 'anestar324-a11y/lingolab';
 const BRANCH = 'main';
 let TOKEN = '';
+let SUPABASE_URL = 'https://ddgykktmrlmtscjnjqac.supabase.co';
+let SUPABASE_SERVICE_KEY = '';
 let currentTab = 'settings';
 let contentData = {};
 let fileShas = {};
@@ -169,6 +172,7 @@ function showTab(tab) {
 
 function renderTab(tab) {
   const el = document.getElementById('tabContent');
+  if (tab === 'reviews') { loadReviews(); return; }
   const d = contentData[tab];
   if (!d) return;
   let html = `<div class="section-title">${{settings:'⚙️ Ерөнхий тохиргоо',home:'🏠 Нүүр хуудас',news:'📰 Мэдээ',events:'🎉 Үйл ажиллагаа',about:'ℹ️ Бидний тухай'}[tab]}</div>`;
@@ -307,6 +311,11 @@ function addItem(path) {
 
 async function saveChanges() {
   const statusEl = document.getElementById('saveStatus');
+  if (currentTab === 'reviews') {
+    statusEl.textContent = 'Сэтгэгдлүүд автоматаар хадгалагдана.';
+    statusEl.className = 'save-status';
+    return;
+  }
   statusEl.textContent = 'Хадгалж байна...';
   statusEl.className = 'save-status';
   try {
@@ -320,9 +329,104 @@ async function saveChanges() {
   }
 }
 
+function saveSupabaseKey() {
+  const key = document.getElementById('sbKeyInput').value.trim();
+  if (!key) return;
+  SUPABASE_SERVICE_KEY = key;
+  localStorage.setItem('ll_supabase_key', key);
+  loadReviews();
+}
+
+async function loadReviews() {
+  const el = document.getElementById('tabContent');
+  if (!SUPABASE_SERVICE_KEY) {
+    el.innerHTML = `
+      <div class="section-title">⭐ Сэтгэгдлүүд</div>
+      <div class="card">
+        <div class="card-title">Supabase Service Role Key</div>
+        <p style="font-size:0.85rem;color:#5f6568;margin-bottom:1rem">Сэтгэгдлүүдийг удирдахын тулд Supabase Service Role Key оруулна уу. Supabase → Project Settings → API → service_role key.</p>
+        <div class="field">
+          <label class="label">Service Role Key</label>
+          <input type="password" id="sbKeyInput" placeholder="eyJ..." />
+        </div>
+        <button class="btn-save" style="margin-top:0.75rem" onclick="saveSupabaseKey()">Хадгалах</button>
+      </div>`;
+    return;
+  }
+  el.innerHTML = '<div class="section-title">⭐ Сэтгэгдлүүд</div><p style="color:#5f6568;padding:1rem">Ачааллаж байна...</p>';
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/reviews?order=created_at.desc`, {
+      headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}` }
+    });
+    if (!res.ok) { const err = await res.json(); throw new Error(err.message || 'Supabase алдаа'); }
+    const reviews = await res.json();
+    let html = `<div class="section-title">⭐ Сэтгэгдлүүд <span style="font-size:0.875rem;font-weight:400;color:#5f6568">(${reviews.length} нийт)</span></div>`;
+    if (!reviews.length) {
+      html += '<div class="card"><p style="color:#5f6568">Одоогоор сэтгэгдэл алга.</p></div>';
+    } else {
+      reviews.forEach(r => {
+        const statusBg = r.approved ? '#dcfce7' : '#fef3c7';
+        const statusColor = r.approved ? '#16a34a' : '#d97706';
+        const statusText = r.approved ? '✓ Нийтлэгдсэн' : '⏳ Хүлээгдэж байна';
+        const stars = '★'.repeat(r.stars || 5) + '☆'.repeat(5 - (r.stars || 5));
+        const date = new Date(r.created_at).toLocaleDateString('mn-MN');
+        html += `<div class="card">
+          <div style="display:flex;justify-content:space-between;align-items:flex-start;margin-bottom:0.75rem;flex-wrap:wrap;gap:0.5rem">
+            <div>
+              <strong style="font-size:0.95rem">${escapeHtml(r.name)}</strong>
+              <span style="color:#5f6568;font-size:0.8rem;margin-left:0.5rem">${escapeHtml(r.role || '')}</span>
+              <div style="color:#f59e0b;font-size:1.1rem;margin-top:0.2rem">${stars}</div>
+            </div>
+            <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
+              <span style="background:${statusBg};color:${statusColor};padding:0.25rem 0.75rem;border-radius:9999px;font-size:0.75rem;font-weight:600">${statusText}</span>
+              ${!r.approved ? `<button class="btn-save" style="padding:0.4rem 0.9rem;font-size:0.78rem" onclick="approveReview(${r.id})">Зөвшөөрөх</button>` : ''}
+              <button class="btn-danger" style="font-size:0.78rem" onclick="deleteReview(${r.id})">Устгах</button>
+            </div>
+          </div>
+          <p style="font-size:0.875rem;color:#2a2f32;line-height:1.6">${escapeHtml(r.text || '')}</p>
+          <p style="font-size:0.75rem;color:#5f6568;margin-top:0.5rem">${date}</p>
+        </div>`;
+      });
+    }
+    el.innerHTML = html;
+  } catch(e) {
+    el.innerHTML = `<div class="section-title">⭐ Сэтгэгдлүүд</div><div class="card"><p style="color:#dc2626">Алдаа: ${e.message}</p><p style="font-size:0.8rem;color:#5f6568;margin-top:0.5rem">Service Role Key буруу байж болзошгүй. <button class="btn-add" style="margin-top:0.5rem" onclick="SUPABASE_SERVICE_KEY='';localStorage.removeItem('ll_supabase_key');loadReviews()">Дахин оруулах</button></p></div>`;
+  }
+}
+
+function escapeHtml(str) {
+  return String(str).replace(/&/g,'&amp;').replace(/</g,'&lt;').replace(/>/g,'&gt;').replace(/"/g,'&quot;');
+}
+
+async function approveReview(id) {
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/reviews?id=eq.${id}`, {
+      method: 'PATCH',
+      headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      body: JSON.stringify({ approved: true })
+    });
+    if (!res.ok) throw new Error('Алдаа гарлаа');
+    loadReviews();
+  } catch(e) { alert('Алдаа: ' + e.message); }
+}
+
+async function deleteReview(id) {
+  if (!confirm('Сэтгэгдлийг устгах уу?')) return;
+  try {
+    const res = await fetch(`${SUPABASE_URL}/rest/v1/reviews?id=eq.${id}`, {
+      method: 'DELETE',
+      headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}` }
+    });
+    if (!res.ok) throw new Error('Алдаа гарлаа');
+    loadReviews();
+  } catch(e) { alert('Алдаа: ' + e.message); }
+}
+
 // Auto-login
 window.onload = () => {
   const saved = localStorage.getItem('ll_admin_token');
+  const sbKey = localStorage.getItem('ll_supabase_key');
+  if (sbKey) SUPABASE_SERVICE_KEY = sbKey;
   if (saved) { TOKEN = saved; document.getElementById('tokenInput').value = saved; initAdmin(); }
 };
 </script>
