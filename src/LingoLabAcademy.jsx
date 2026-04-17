@@ -985,7 +985,7 @@ function AboutPage() {
    ════════════════════════════════════════════════════════════════ */
 function ContactPage() {
   const { contact } = settingsData;
-  const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [form, setForm] = useState({ name: "", email: "", phone: "", subject: "", message: "" });
   const [status, setStatus] = useState("idle"); // idle | sending | success | error
 
   const handleSubmit = async () => {
@@ -1001,6 +1001,7 @@ function ContactPage() {
         {
           from_name:    form.name,
           from_email:   form.email,
+          from_phone:   form.phone || "—",
           subject:      form.subject || "(гарчиггүй)",
           message:      form.message,
           to_email:     "lingolabmongolia@gmail.com",
@@ -1117,6 +1118,19 @@ function ContactPage() {
                 onBlur={e => { e.target.style.boxShadow = "none"; }}
               />
             </div>
+          </div>
+          <div style={{ marginBottom: "1rem" }}>
+            <label style={{ fontSize: "0.75rem", fontWeight: 600, color: T.onSurfaceVariant, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.35rem", display: "block" }}>УТАСНЫ ДУГААР</label>
+            <input placeholder="+976 xxxxxxxx"
+              value={form.phone} onChange={e => setForm({ ...form, phone: e.target.value })}
+              style={{
+                width: "100%", padding: "0.85rem 1.25rem", borderRadius: T.radius.xl,
+                border: "none", background: T.surfaceContainerLow,
+                fontSize: "0.85rem", fontFamily: "'Plus Jakarta Sans'", outline: "none",
+              }}
+              onFocus={e => { e.target.style.boxShadow = `0 0 0 2px ${T.primaryContainer}40, inset 0 0 8px ${T.primaryContainer}15`; }}
+              onBlur={e => { e.target.style.boxShadow = "none"; }}
+            />
           </div>
           <div style={{ marginBottom: "1rem" }}>
             <label style={{ fontSize: "0.75rem", fontWeight: 600, color: T.onSurfaceVariant, textTransform: "uppercase", letterSpacing: "0.05em", marginBottom: "0.35rem", display: "block" }}>ГАРЧИГ</label>
