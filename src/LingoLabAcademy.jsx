@@ -1,5 +1,10 @@
 import { useState, useEffect, useRef } from "react";
 import lingoLabLogo from "./lingolab-logo.jpg";
+import homeData from "./content/home.json";
+import newsData from "./content/news.json";
+import eventsData from "./content/events.json";
+import aboutData from "./content/about.json";
+import settingsData from "./content/settings.json";
 
 /* ─── Google Fonts ─── */
 const fontLink = document.createElement("link");
@@ -125,6 +130,7 @@ function Navbar({ current, onNav }) {
 
 /* ─── Footer ─── */
 function Footer({ onNav }) {
+  const { contact, footer } = settingsData;
   return (
     <footer style={{ background: T.surfaceContainerLow, padding: "3rem 2rem 1.5rem", marginTop: "4rem" }}>
       <div style={{ maxWidth: 1200, margin: "0 auto" }}>
@@ -134,7 +140,7 @@ function Footer({ onNav }) {
               <span style={{ color: T.primary }}>LingoLab</span> Academy
             </div>
             <p style={{ fontSize: "0.8rem", color: T.onSurfaceVariant, lineHeight: 1.6 }}>
-              Хүүхэд бүрийн бүтээлчээр хөгжүүлэх дэлхийн жишигт нийцсэн сургалтын чанартай тэнд.
+              {footer.desc}
             </p>
           </div>
           <div>
@@ -145,9 +151,9 @@ function Footer({ onNav }) {
           </div>
           <div>
             <h4 style={{ fontSize: "0.85rem", fontWeight: 700, marginBottom: "0.75rem" }}>Холбоо барих</h4>
-            <p style={{ fontSize: "0.8rem", color: T.onSurfaceVariant, marginBottom: "0.4rem" }}>Улаанбаатар, Сүхбаатар дүүрэг</p>
-            <p style={{ fontSize: "0.8rem", color: T.onSurfaceVariant, marginBottom: "0.4rem" }}>+976 7700-0000</p>
-            <p style={{ fontSize: "0.8rem", color: T.onSurfaceVariant }}>info@lingolab.mn</p>
+            <p style={{ fontSize: "0.8rem", color: T.onSurfaceVariant, marginBottom: "0.4rem" }}>{contact.address.split(",")[0]}</p>
+            <p style={{ fontSize: "0.8rem", color: T.onSurfaceVariant, marginBottom: "0.4rem" }}>{contact.phone}</p>
+            <p style={{ fontSize: "0.8rem", color: T.onSurfaceVariant }}>{contact.email}</p>
           </div>
           <div>
             <h4 style={{ fontSize: "0.85rem", fontWeight: 700, marginBottom: "0.75rem" }}>Сошиал</h4>
@@ -158,7 +164,7 @@ function Footer({ onNav }) {
         </div>
         <Squiggle w={160} />
         <p style={{ textAlign: "center", fontSize: "0.75rem", color: T.onSurfaceVariant, marginTop: "1rem" }}>
-          © 2024 LingoLab Academy. Сурч, тоглож, хөгжицгөөе!
+          {footer.copyright}
         </p>
       </div>
     </footer>
@@ -233,6 +239,7 @@ function PlaceholderImg({ w = 400, h = 300, label = "", style: s = {}, gradient 
    PAGE: HOME
    ════════════════════════════════════════════════════════════════ */
 function HomePage({ onNav }) {
+  const { hero, programs, whyUs, testimonials, cta } = homeData;
   return (
     <div>
       {/* Hero */}
@@ -244,20 +251,20 @@ function HomePage({ onNav }) {
         {/* Decorative blobs */}
         <div style={{ position: "absolute", top: -80, right: -80, width: 300, height: 300, borderRadius: "50%", background: "rgba(253,211,77,0.12)", filter: "blur(60px)" }} />
         <div style={{ position: "absolute", bottom: -40, left: -60, width: 200, height: 200, borderRadius: "50%", background: "rgba(247,164,139,0.15)", filter: "blur(50px)" }} />
-        
+
         <div style={{ maxWidth: 1200, margin: "0 auto", display: "grid", gridTemplateColumns: "1fr 1fr", gap: "3rem", alignItems: "center" }}>
           <div className="fade-in">
-            <Chip color={T.primary} textColor="#fff">ШИНЭ ЭЛСЭЛТ ЭХЭЛЛЭЭ</Chip>
+            <Chip color={T.primary} textColor="#fff">{hero.badge}</Chip>
             <h1 style={{ fontFamily: "'Lexend'", fontSize: "3.2rem", fontWeight: 800, lineHeight: 1.1, margin: "1rem 0", letterSpacing: "-0.02em" }}>
-              Хэл сурах нь<br />
-              <span style={{ color: T.primary, fontStyle: "italic" }}>адал явдал</span>
+              {hero.title}<br />
+              <span style={{ color: T.primary, fontStyle: "italic" }}>{hero.titleHighlight}</span>
             </h1>
             <p style={{ fontSize: "1rem", color: T.onSurfaceVariant, lineHeight: 1.7, maxWidth: 480, marginBottom: "2rem" }}>
-              Бид хүүхэд бүрийн доторх бүтээлч чадварыг нээж, хэлийг тоглоом, урлаг, технологиор дамжуулан зааддаг орчин үеийн академи юм.
+              {hero.description}
             </p>
             <div style={{ display: "flex", gap: "1rem", alignItems: "center" }}>
-              <Btn onClick={() => onNav("contact")}>Одоо бүртгүүлээрэй</Btn>
-              <Btn variant="secondary" onClick={() => onNav("about")}>Хөтөлбөр үзэх</Btn>
+              <Btn onClick={() => onNav("contact")}>{hero.ctaPrimary}</Btn>
+              <Btn variant="secondary" onClick={() => onNav("about")}>{hero.ctaSecondary}</Btn>
             </div>
             <div style={{ display: "flex", alignItems: "center", gap: "0.75rem", marginTop: "1.5rem" }}>
               <div style={{ display: "flex" }}>
@@ -272,7 +279,7 @@ function HomePage({ onNav }) {
                 ))}
               </div>
               <span style={{ fontSize: "0.85rem", color: T.onSurfaceVariant }}>
-                <strong style={{ color: T.onSurface, fontFamily: "'Lexend'" }}>500+</strong> Суралцагчид
+                <strong style={{ color: T.onSurface, fontFamily: "'Lexend'" }}>{hero.studentCount}</strong> Суралцагчид
               </span>
             </div>
           </div>
@@ -302,25 +309,26 @@ function HomePage({ onNav }) {
           </p>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "2rem" }}>
-          {[
-            { icon: "🌐", title: "Англи хэл", desc: "Хэлжит тоглоом, дуу хуур, хэрэглээн ярианаар дамжуулан Англи хэлийг тоглоом хэл шинэ сурах боломж.", color: "rgba(0,81,209,0.08)", accent: T.primary },
-            { icon: "🎨", title: "Урлаг", desc: "Зураг зурах, гар урлал бүтээлч сэтгэлгээг хөгжүүлэх хүүхэдүүд хүсэлийг тэвэрлийн тайлыг.", color: "rgba(247,164,139,0.12)", accent: T.tertiary },
-            { icon: "🤖", title: "Технологи", desc: "Код бичих үндэс, робот угсралт, дижитал ертөнцтэй танилцах анхан шатны мэдлэг олгоно.", color: "rgba(78,205,196,0.12)", accent: T.mint },
-          ].map((p, i) => (
-            <Card key={i} style={{ position: "relative", overflow: "hidden" }}>
-              <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: p.color }} />
-              <div style={{
-                width: 56, height: 56, borderRadius: T.radius.lg, background: p.color,
-                display: "flex", alignItems: "center", justifyContent: "center",
-                fontSize: "1.5rem", marginBottom: "1rem", position: "relative",
-              }}>{p.icon}</div>
-              <h3 style={{ fontFamily: "'Lexend'", fontSize: "1.25rem", fontWeight: 700, marginBottom: "0.5rem" }}>{p.title}</h3>
-              <p style={{ fontSize: "0.875rem", color: T.onSurfaceVariant, lineHeight: 1.7, marginBottom: "1rem" }}>{p.desc}</p>
-              <span style={{ color: p.accent, fontWeight: 600, fontSize: "0.875rem", cursor: "pointer" }}>
-                Дэлгэрэнгүй →
-              </span>
-            </Card>
-          ))}
+          {programs.map((p, i) => {
+            const colors = ["rgba(0,81,209,0.08)", "rgba(247,164,139,0.12)", "rgba(78,205,196,0.12)"];
+            const accents = [T.primary, T.tertiary, T.mint];
+            const prog = { ...p, color: colors[i], accent: accents[i] };
+            return (
+              <Card key={i} style={{ position: "relative", overflow: "hidden" }}>
+                <div style={{ position: "absolute", top: -30, right: -30, width: 120, height: 120, borderRadius: "50%", background: prog.color }} />
+                <div style={{
+                  width: 56, height: 56, borderRadius: T.radius.lg, background: prog.color,
+                  display: "flex", alignItems: "center", justifyContent: "center",
+                  fontSize: "1.5rem", marginBottom: "1rem", position: "relative",
+                }}>{prog.icon}</div>
+                <h3 style={{ fontFamily: "'Lexend'", fontSize: "1.25rem", fontWeight: 700, marginBottom: "0.5rem" }}>{prog.title}</h3>
+                <p style={{ fontSize: "0.875rem", color: T.onSurfaceVariant, lineHeight: 1.7, marginBottom: "1rem" }}>{prog.desc}</p>
+                <span style={{ color: prog.accent, fontWeight: 600, fontSize: "0.875rem", cursor: "pointer" }}>
+                  Дэлгэрэнгүй →
+                </span>
+              </Card>
+            );
+          })}
         </div>
       </section>
 
@@ -344,11 +352,7 @@ function HomePage({ onNav }) {
               Яагаад бидний г <span style={{ color: T.primary, fontStyle: "italic" }}>сонгох</span> вэ?
             </h2>
             <div style={{ display: "flex", flexDirection: "column", gap: "1.5rem", marginTop: "2rem" }}>
-              {[
-                { icon: "🎮", title: "Хөгжилтэй сургалт", desc: "Хичээл бүр нь сонирхолтой тоглоом, интерактив дасгалуудаар бялхаж тул хүүхэд дархнитуй." },
-                { icon: "👩‍🏫", title: "Мэргэжлийн багш нар", desc: "Хүүхэдтэй ажиллах туршлагатай, олон улсын зэрэгтэй багш нар хичээл заана." },
-                { icon: "🛡️", title: "Аюулгүй орчин", desc: "Хүүхдийн эрүүл мэнд, аюулгүй байдлыг бурэн хангасан орчин үрэйг тохилогтой мяна таними." },
-              ].map((it, i) => (
+              {whyUs.map((it, i) => (
                 <div key={i} style={{ display: "flex", gap: "1rem", alignItems: "flex-start" }}>
                   <div style={{
                     width: 48, height: 48, borderRadius: T.radius.lg,
@@ -372,11 +376,7 @@ function HomePage({ onNav }) {
           Эцэг эхчүүдийн сэтгэгдэл
         </h2>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem" }}>
-          {[
-            { name: "А. Наран", role: "Эцэг эх", text: "Манай охин Англи хэлний хичээлдээ аваалгаа нихээр бусгтай болсон. Багш нарын их лааж арга барий яг нихээр авхнитай.", stars: 5 },
-            { name: "Б. Тэмүүлэн", role: "Эцэг эх", text: "Урбэн усалагтын манай сэтгэл бодол чадварыг маш сайн хөгжүулж байна. Сэтгэл ханамж 100%.", stars: 5 },
-            { name: "Г. Солонго", role: "Эцэг эх", text: "Ухаанлаг хөтөлбөрөө ёснохо хойш хүү манай маш их өөртөс оплодлаж болсон. Баярлалаа LingoLab!", stars: 5 },
-          ].map((t, i) => (
+          {testimonials.map((t, i) => (
             <Card key={i}>
               <div style={{ display: "flex", gap: "0.25rem", marginBottom: "0.75rem" }}>
                 {Array(t.stars).fill(0).map((_, j) => <span key={j} style={{ color: T.secondary, fontSize: "1.1rem" }}>★</span>)}
@@ -408,13 +408,13 @@ function HomePage({ onNav }) {
           <div style={{ position: "absolute", top: -60, right: -40, width: 200, height: 200, borderRadius: "50%", background: "rgba(255,255,255,0.08)" }} />
           <div style={{ position: "absolute", bottom: -80, left: -40, width: 250, height: 250, borderRadius: "50%", background: "rgba(255,255,255,0.05)" }} />
           <h2 style={{ fontFamily: "'Lexend'", fontSize: "2rem", fontWeight: 800, color: "#fff", marginBottom: "0.75rem", position: "relative" }}>
-            Хүүхдийнхээ ирээдүйд<br />өнөөдөр хөрөнгө оруулаарай
+            {cta.title.split("\n").map((line, i) => <span key={i}>{line}{i === 0 && <br />}</span>)}
           </h2>
           <p style={{ color: "rgba(255,255,255,0.85)", marginBottom: "2rem", position: "relative" }}>
-            Бүртгэл хэзээгаартай тул та яараарай. Бид таны хүүхдийг хүлээж байна.
+            {cta.desc}
           </p>
           <Btn onClick={() => onNav("contact")} style={{ background: "#fff", color: T.primary }}>
-            Одоо бүртгүүлээрэй
+            {cta.btnText}
           </Btn>
         </div>
       </section>
@@ -425,15 +425,17 @@ function HomePage({ onNav }) {
 /* ════════════════════════════════════════════════════════════════
    PAGE: NEWS / МЭДЭЭ
    ════════════════════════════════════════════════════════════════ */
+const articleGradients = [
+  "linear-gradient(135deg, #f6d365 0%, #fda085 100%)",
+  "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)",
+  "linear-gradient(135deg, #667eea 0%, #764ba2 100%)",
+  "linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)",
+  "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)",
+  "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)",
+];
+
 function NewsPage() {
-  const articles = [
-    { tag: "АМЖИЛТ", date: "2024.09.20", title: "Манай сурагчид IELTS-ийн шалгалтанд 8.0 дундаж оноо авлаа", desc: "Энэ жилийн төгсгөнд маань олон улсын хэлний бэлтгэдээс маш амжилттай оролцож...", featured: true, gradient: "linear-gradient(135deg, #f6d365 0%, #fda085 100%)" },
-    { tag: "ҮЙЛ АЖИЛЛАГАА", date: "2024.05.15", title: "Зуны сургалтын бүртгэл эхэллээ", desc: "LingoLab-ийн зуныгэрийн хуулсан хөтөлбөрт хүүхдүүд зарцуудаас урих байна.", gradient: "linear-gradient(135deg, #a18cd1 0%, #fbc2eb 100%)" },
-    { tag: "ШИНЭ ТЕХНОЛОГИ", date: "2024.05.12", title: "Хиймэл оюун ухаанд суурилсан шинэ апп нээлтээ хийлээ", desc: "Сурагчдын маань бие даан суралцах явцыг дэмжих аппликешн...", gradient: "linear-gradient(135deg, #667eea 0%, #764ba2 100%)" },
-    { tag: "БАГШ НАРЫН БУЙАН", date: "2024.05.08", title: "Гадаад багш нарын зөвлөгөө: Сонсох чадварыг хэрхэн сайжруулах вэ?", desc: "Манай академийн зочин багш Маркэлэн сурч буй залуус зорилуулан...", gradient: "linear-gradient(135deg, #89f7fe 0%, #66a6ff 100%)" },
-    { tag: "АМЖИЛТ", date: "2024.05.01", title: "Тэтгэлэгт хамрагдсан сурагчдын баярын мөч", desc: "Энэ хавар Европын нэр хүндтэй их дээд сургуулиудад тэтгэлэг...", gradient: "linear-gradient(135deg, #f093fb 0%, #f5576c 100%)" },
-    { tag: "ЗӨВЛӨГӨӨ", date: "2024.04.28", title: "Бага насны хүүхдэд хэл заах нууц", desc: "Тоглоомын аргаар дамжуулан хэл нь хэлний хамгийн үр дүнтэй...", gradient: "linear-gradient(135deg, #4facfe 0%, #00f2fe 100%)" },
-  ];
+  const articles = newsData.articles.map((a, i) => ({ ...a, gradient: articleGradients[i] }));
 
   return (
     <div>
@@ -750,16 +752,17 @@ function EventsPage() {
    PAGE: ABOUT / БИДНИЙ ТУХАЙ
    ════════════════════════════════════════════════════════════════ */
 function AboutPage() {
+  const { hero, story, values, team } = aboutData;
   return (
     <div>
       {/* Hero */}
       <section style={{ padding: "8rem 2rem 4rem", textAlign: "center" }}>
-        <Chip color={T.secondary} textColor={T.onSecondaryContainer}>ТАНИЛЦУУЛГА</Chip>
+        <Chip color={T.secondary} textColor={T.onSecondaryContainer}>{hero.badge}</Chip>
         <h1 style={{ fontFamily: "'Lexend'", fontSize: "2.8rem", fontWeight: 800, lineHeight: 1.15, margin: "1rem auto", maxWidth: 700, letterSpacing: "-0.02em" }}>
-          Бид ирээдүйн <span style={{ color: T.primary, fontStyle: "italic" }}>дэлхийн ирээдийг</span> бэлтгэж байна.
+          {hero.title} <span style={{ color: T.primary, fontStyle: "italic" }}>{hero.titleHighlight}</span> бэлтгэж байна.
         </h1>
         <p style={{ color: T.onSurfaceVariant, maxWidth: 560, margin: "0 auto", lineHeight: 1.7 }}>
-          LingoLab Academy бол хүүгэр яна хэлний Уг баак. Энэ бол хүүхэд бүрийн доторк бүтээлч чадварыг нээж, сурах хүсэл эрмэлзлийг нь бадраах "Өөрчин үяадий сурган" юм.
+          {hero.desc}
         </p>
       </section>
 
@@ -774,16 +777,16 @@ function AboutPage() {
               padding: "1rem 1.5rem", fontFamily: "'Lexend'", fontWeight: 800,
               fontSize: "1.5rem", color: T.onSecondaryContainer,
             }}>
-              2018 <span style={{ fontSize: "0.7rem", fontWeight: 500, display: "block" }}>Анхлан нибалн</span>
+              {story.foundedYear} <span style={{ fontSize: "0.7rem", fontWeight: 500, display: "block" }}>Анхлан байгуулагдсан</span>
             </div>
           </div>
           <div>
-            <h2 style={{ fontFamily: "'Lexend'", fontSize: "1.75rem", fontWeight: 700, marginBottom: "1rem" }}>Бидний түүх</h2>
+            <h2 style={{ fontFamily: "'Lexend'", fontSize: "1.75rem", fontWeight: 700, marginBottom: "1rem" }}>{story.title}</h2>
             <p style={{ fontSize: "0.9rem", color: T.onSurfaceVariant, lineHeight: 1.8, marginBottom: "1rem" }}>
-              Манай академи 2018 онд ердөр гуравхан сурагчтайгаар жижигхэн өрөөнд анхнд ажлаа эхэлсэн түүхтэй. Бидний зорилго тодорхой байсан: Хүүхэд бүрт тохирэцон, үндаэ загвуй, сонирхолтой аргаар англа хэл заах.
+              {story.paragraph1}
             </p>
             <p style={{ fontSize: "0.9rem", color: T.onSurfaceVariant, lineHeight: 1.8, marginBottom: "1.5rem" }}>
-              Өнөөдөр бид 500 гаруй төгсөгчтэй, өөрсдийн гэсэн сургалтын арга барилыг боловсруулсан мэргэжлийн хамт олон болон өргөжсөн. Хэл сурах нь зөвхөн дүрэм шахагтаг биш, харин ертөнцийг нарыг шинэ цонх юая ядвал юм.
+              {story.paragraph2}
             </p>
             <span style={{ color: T.primary, fontWeight: 600, fontSize: "0.9rem", cursor: "pointer" }}>● Олон улсын хөтөлбөр</span>
           </div>
@@ -795,13 +798,11 @@ function AboutPage() {
         <div style={{ maxWidth: 1100, margin: "0 auto", textAlign: "center" }}>
           <h2 style={{ fontFamily: "'Lexend'", fontSize: "2rem", fontWeight: 700, marginBottom: "2.5rem" }}>Бидний үнэт зүйлс</h2>
           <div style={{ display: "grid", gridTemplateColumns: "repeat(3, 1fr)", gap: "1.5rem", gridAutoRows: "1fr" }}>
-            {[
-              { icon: "🎯", title: "Хүүхэд бүр давтагдашгүй", desc: "Сурагч бүрийн суурь арга барил, сонирхлыг хүндэтнатаг, хуль хүр руу чигласэн хатабарнйг санал болгодог.", bg: T.surfaceContainerLowest },
-              { icon: "💡", title: "Бүтээлч сэтгэлгээ", desc: "Бид асуудлыг шийдэхэрнйн, шуурхэлогтой сэтгэн чадвэрт хэлний хинэлттай хосойтуудал.", bg: T.primary, color: "#fff" },
-              { icon: "🎨", title: "Илэлтзэй хамт олон", desc: "", bg: T.surfaceContainerLowest },
-              { icon: "🛡️", title: "Сэтгэл зүйн аюулгүй байдал", desc: "Хүүхэд алдан тэрлахаас аймтгүй, жайрыг этэлжэтиэсгэр аржин сүрах орчниг бид бүрдүүлсэн.", bg: T.surfaceContainerLowest },
-              { icon: "📊", title: "", desc: "", bg: T.surfaceContainerLow, stat: "100%", statLabel: "СЭТГЭЛ ХАНАМЖ" },
-            ].map((v, i) => (
+            {[...values.map((v, i) => ({
+              ...v,
+              bg: v.highlight ? T.primary : T.surfaceContainerLowest,
+              color: v.highlight ? "#fff" : undefined,
+            })), { icon: "📊", title: "", desc: "", bg: T.surfaceContainerLow, stat: "100%", statLabel: "СЭТГЭЛ ХАНАМЖ" }].map((v, i) => (
               <Card key={i} style={{
                 background: v.bg, color: v.color || T.onSurface,
                 textAlign: "left",
@@ -835,12 +836,7 @@ function AboutPage() {
           <Btn variant="secondary" style={{ fontSize: "0.8rem", padding: "0.7rem 1.25rem" }}>Бүх багш нар</Btn>
         </div>
         <div style={{ display: "grid", gridTemplateColumns: "repeat(4, 1fr)", gap: "1.5rem" }}>
-          {[
-            { name: "С. Анударь", role: "Англа хэлний заах арга тэбч" },
-            { name: "Жеймс Уилсон", role: "Прахтик чадваар хариуцсан багш" },
-            { name: "Б. Энхжин", role: "Хүүхдийн сэтгэл тыйч, багш" },
-            { name: "Г. Тэмүүлэн", role: "Зөвэрэп" },
-          ].map((t, i) => (
+          {team.map((t, i) => (
             <div key={i} style={{ textAlign: "center" }}>
               <div style={{
                 width: "100%", aspectRatio: "1", borderRadius: T.radius.xl,
@@ -885,6 +881,7 @@ function AboutPage() {
    PAGE: CONTACT / ХОЛБОО БАРИХ
    ════════════════════════════════════════════════════════════════ */
 function ContactPage() {
+  const { contact } = settingsData;
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
   return (
     <div>
@@ -918,14 +915,14 @@ function ContactPage() {
                 <div style={{ width: 36, height: 36, borderRadius: T.radius.md, background: "rgba(0,81,209,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>📱</div>
                 <div>
                   <p style={{ fontSize: "0.7rem", color: T.onSurfaceVariant }}>Утас</p>
-                  <p style={{ fontFamily: "'Lexend'", fontWeight: 600 }}>+976 8800-1234</p>
+                  <p style={{ fontFamily: "'Lexend'", fontWeight: 600 }}>{contact.phone}</p>
                 </div>
               </div>
               <div style={{ display: "flex", alignItems: "center", gap: "0.75rem" }}>
                 <div style={{ width: 36, height: 36, borderRadius: T.radius.md, background: "rgba(0,81,209,0.08)", display: "flex", alignItems: "center", justifyContent: "center" }}>✉️</div>
                 <div>
                   <p style={{ fontSize: "0.7rem", color: T.onSurfaceVariant }}>И-мэйл</p>
-                  <p style={{ fontFamily: "'Lexend'", fontWeight: 600 }}>info@lingolab.mn</p>
+                  <p style={{ fontFamily: "'Lexend'", fontWeight: 600 }}>{contact.email}</p>
                 </div>
               </div>
             </div>
@@ -947,7 +944,7 @@ function ContactPage() {
               📍 Байршил
             </h3>
             <p style={{ fontSize: "0.85rem", color: T.onSurfaceVariant, lineHeight: 1.7 }}>
-              Улаанбаатар хот, Сүхбаатар дүүрэг, 1-р хороо, Чингисийн өргөн чөлөө, Аппл Тауэр, 12-р давхар
+              {contact.address}
             </p>
           </Card>
         </div>

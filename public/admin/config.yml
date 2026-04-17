@@ -1,0 +1,178 @@
+backend:
+  name: github
+  repo: anestar324-a11y/lingolab
+  branch: main
+  auth_type: pkce
+  client_id: 0v23li9YaBJ22zjUQyvg
+
+media_folder: public/images
+public_folder: /images
+
+collections:
+  - name: settings
+    label: Ерөнхий тохиргоо
+    files:
+      - name: settings
+        label: Холбоо барих & Footer
+        file: src/content/settings.json
+        format: json
+        fields:
+          - label: Холбоо барих
+            name: contact
+            widget: object
+            fields:
+              - { label: Утас, name: phone, widget: string }
+              - { label: И-мэйл, name: email, widget: string }
+              - { label: Хаяг, name: address, widget: string }
+          - label: Сошиал
+            name: social
+            widget: object
+            fields:
+              - { label: Фэйсбүүк URL, name: facebook, widget: string, required: false }
+              - { label: Инстаграм URL, name: instagram, widget: string, required: false }
+              - { label: Ютүб URL, name: youtube, widget: string, required: false }
+          - label: Footer
+            name: footer
+            widget: object
+            fields:
+              - { label: Тайлбар, name: desc, widget: text }
+              - { label: Copyright, name: copyright, widget: string }
+
+  - name: home
+    label: Нүүр хуудас
+    files:
+      - name: home
+        label: Нүүр хуудас
+        file: src/content/home.json
+        format: json
+        fields:
+          - label: Hero хэсэг
+            name: hero
+            widget: object
+            fields:
+              - { label: Badge текст, name: badge, widget: string }
+              - { label: Гарчиг, name: title, widget: string }
+              - { label: Гарчиг (өнгөт), name: titleHighlight, widget: string }
+              - { label: Тайлбар, name: description, widget: text }
+              - { label: Суралцагчдын тоо, name: studentCount, widget: string }
+              - { label: Үндсэн товч, name: ctaPrimary, widget: string }
+              - { label: Дэд товч, name: ctaSecondary, widget: string }
+          - label: Хөтөлбөрүүд
+            name: programs
+            widget: list
+            fields:
+              - { label: Emoji, name: icon, widget: string }
+              - { label: Нэр, name: title, widget: string }
+              - { label: Тайлбар, name: desc, widget: text }
+          - label: Яагаад бидэн
+            name: whyUs
+            widget: list
+            fields:
+              - { label: Emoji, name: icon, widget: string }
+              - { label: Гарчиг, name: title, widget: string }
+              - { label: Тайлбар, name: desc, widget: text }
+          - label: Сэтгэгдлүүд
+            name: testimonials
+            widget: list
+            fields:
+              - { label: Нэр, name: name, widget: string }
+              - { label: Үүрэг, name: role, widget: string }
+              - { label: Сэтгэгдэл, name: text, widget: text }
+              - { label: Од (1-5), name: stars, widget: number, min: 1, max: 5 }
+          - label: CTA хэсэг
+            name: cta
+            widget: object
+            fields:
+              - { label: Гарчиг, name: title, widget: text }
+              - { label: Тайлбар, name: desc, widget: string }
+              - { label: Товчны текст, name: btnText, widget: string }
+
+  - name: news
+    label: Мэдээ
+    files:
+      - name: news
+        label: Мэдээнүүд
+        file: src/content/news.json
+        format: json
+        fields:
+          - label: Нийтлэлүүд
+            name: articles
+            widget: list
+            fields:
+              - { label: Шошго, name: tag, widget: string }
+              - { label: Огноо, name: date, widget: string }
+              - { label: Гарчиг, name: title, widget: string }
+              - { label: Тайлбар, name: desc, widget: text }
+              - { label: Онцлох мэдээ, name: featured, widget: boolean, default: false }
+
+  - name: events
+    label: Үйл ажиллагаа
+    files:
+      - name: events
+        label: Эвент & Хөтөлбөрүүд
+        file: src/content/events.json
+        format: json
+        fields:
+          - label: Эвентүүд
+            name: events
+            widget: list
+            fields:
+              - { label: Төрөл, name: type, widget: string }
+              - { label: Emoji, name: icon, widget: string }
+              - { label: Гарчиг, name: title, widget: string }
+              - { label: Тайлбар, name: desc, widget: text }
+              - { label: Огноо, name: date, widget: string, required: false }
+              - { label: Цаг, name: time, widget: string, required: false }
+              - { label: Онцлох, name: featured, widget: boolean, default: false }
+          - label: Хөтөлбөрүүд
+            name: programs
+            widget: list
+            fields:
+              - { label: Нэр, name: name, widget: string }
+              - { label: Нас, name: age, widget: string }
+              - { label: Үнэ, name: price, widget: string }
+              - { label: Тайлбар, name: desc, widget: text }
+              - label: Онцлогууд
+                name: features
+                widget: list
+                field: { label: Онцлог, name: item, widget: string }
+              - { label: Онцлох (highlighted), name: highlight, widget: boolean, default: false }
+
+  - name: about
+    label: Бидний тухай
+    files:
+      - name: about
+        label: Бидний тухай
+        file: src/content/about.json
+        format: json
+        fields:
+          - label: Hero
+            name: hero
+            widget: object
+            fields:
+              - { label: Badge, name: badge, widget: string }
+              - { label: Гарчиг, name: title, widget: string }
+              - { label: Гарчиг (өнгөт), name: titleHighlight, widget: string }
+              - { label: Тайлбар, name: desc, widget: text }
+          - label: Бидний түүх
+            name: story
+            widget: object
+            fields:
+              - { label: Байгуулагдсан он, name: foundedYear, widget: string }
+              - { label: Гарчиг, name: title, widget: string }
+              - { label: 1-р хэсэг, name: paragraph1, widget: text }
+              - { label: 2-р хэсэг, name: paragraph2, widget: text }
+          - label: Үнэт зүйлс
+            name: values
+            widget: list
+            fields:
+              - { label: Emoji, name: icon, widget: string }
+              - { label: Гарчиг, name: title, widget: string }
+              - { label: Тайлбар, name: desc, widget: text }
+              - { label: Онцлох (цэнхэр), name: highlight, widget: boolean, default: false }
+          - label: Баг хамт олон
+            name: team
+            widget: list
+            fields:
+              - { label: Нэр, name: name, widget: string }
+              - { label: Албан тушаал, name: role, widget: string }
