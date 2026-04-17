@@ -10,9 +10,9 @@ import settingsData from "./content/settings.json";
 
 // ── EmailJS тохиргоо ────────────────────────────────────────────
 // emailjs.com дээр бүртгүүлж, дараах утгуудыг солино уу:
-const EMAILJS_SERVICE_ID  = "YOUR_SERVICE_ID";   // жш: "service_abc123"
-const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";  // жш: "template_xyz789"
-const EMAILJS_PUBLIC_KEY  = "YOUR_PUBLIC_KEY";   // жш: "aBcDeFgHiJkLmNoP"
+const EMAILJS_SERVICE_ID  = "service_e8k8tf3";
+const EMAILJS_TEMPLATE_ID = "template_0lg1z8o";
+const EMAILJS_PUBLIC_KEY  = "04uizfl3C2-Px4LSt";
 // ────────────────────────────────────────────────────────────────
 
 /* ─── Google Fonts ─── */
