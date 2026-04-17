@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import lingoLabLogo from "./lingolab-logo.jpg";
 
 /* ─── Google Fonts ─── */
 const fontLink = document.createElement("link");
@@ -94,9 +95,9 @@ function Navbar({ current, onNav }) {
       padding: "0.75rem 2rem",
     }}>
       <div style={{ maxWidth: 1200, margin: "0 auto", display: "flex", alignItems: "center", justifyContent: "space-between" }}>
-        <div style={{ fontFamily: "'Lexend', sans-serif", fontWeight: 700, fontSize: "1.25rem", cursor: "pointer" }}
+        <div style={{ cursor: "pointer", display: "flex", alignItems: "center" }}
           onClick={() => onNav("home")}>
-          <span style={{ color: T.primary }}>LingoLab</span> Academy
+          <img src={lingoLabLogo} alt="LingoLab Academy" style={{ height: "2.5rem", width: "auto" }} />
         </div>
         <div style={{ display: "flex", gap: "1.5rem", alignItems: "center" }}>
           {navItems.map(n => (
