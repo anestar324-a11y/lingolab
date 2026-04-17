@@ -379,8 +379,8 @@ async function loadReviews() {
             </div>
             <div style="display:flex;align-items:center;gap:0.5rem;flex-wrap:wrap">
               <span style="background:${statusBg};color:${statusColor};padding:0.25rem 0.75rem;border-radius:9999px;font-size:0.75rem;font-weight:600">${statusText}</span>
-              ${!r.approved ? `<button class="btn-save" style="padding:0.4rem 0.9rem;font-size:0.78rem" onclick="approveReview(${r.id})">Зөвшөөрөх</button>` : ''}
-              <button class="btn-danger" style="font-size:0.78rem" onclick="deleteReview(${r.id})">Устгах</button>
+              ${!r.approved ? `<button class="btn-save" style="padding:0.4rem 0.9rem;font-size:0.78rem" onclick="approveReview('${r.id}')">Зөвшөөрөх</button>` : ''}
+              <button class="btn-danger" style="font-size:0.78rem" onclick="deleteReview('${r.id}')">Устгах</button>
             </div>
           </div>
           <p style="font-size:0.875rem;color:#2a2f32;line-height:1.6">${escapeHtml(r.text || '')}</p>
@@ -402,10 +402,15 @@ async function approveReview(id) {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/reviews?id=eq.${id}`, {
       method: 'PATCH',
-      headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=minimal' },
+      headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`, 'Content-Type': 'application/json', 'Prefer': 'return=representation' },
       body: JSON.stringify({ approved: true })
     });
-    if (!res.ok) throw new Error('Алдаа гарлаа');
+    const body = await res.text();
+    if (!res.ok) throw new Error(body);
+    if (body === '[]' || body === 'null' || body === '') {
+      alert('Сэтгэгдэл олдсонгүй. ID: ' + id + '\nSupabase table-д "id" багана байгаа эсэхийг шалгана уу.');
+      return;
+    }
     loadReviews();
   } catch(e) { alert('Алдаа: ' + e.message); }
 }
@@ -415,9 +420,10 @@ async function deleteReview(id) {
   try {
     const res = await fetch(`${SUPABASE_URL}/rest/v1/reviews?id=eq.${id}`, {
       method: 'DELETE',
-      headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}` }
+      headers: { 'apikey': SUPABASE_SERVICE_KEY, 'Authorization': `Bearer ${SUPABASE_SERVICE_KEY}`, 'Prefer': 'return=representation' }
     });
-    if (!res.ok) throw new Error('Алдаа гарлаа');
+    const body = await res.text();
+    if (!res.ok) throw new Error(body);
     loadReviews();
   } catch(e) { alert('Алдаа: ' + e.message); }
 }
