@@ -1,4 +1,5 @@
 import { useState, useEffect, useRef } from "react";
+import emailjs from "@emailjs/browser";
 import lingoLabLogo from "./lingolab-logo.jpg";
 import { supabase } from "./supabaseClient";
 import homeData from "./content/home.json";
@@ -6,6 +7,13 @@ import newsData from "./content/news.json";
 import eventsData from "./content/events.json";
 import aboutData from "./content/about.json";
 import settingsData from "./content/settings.json";
+
+// ── EmailJS тохиргоо ────────────────────────────────────────────
+// emailjs.com дээр бүртгүүлж, дараах утгуудыг солино уу:
+const EMAILJS_SERVICE_ID  = "YOUR_SERVICE_ID";   // жш: "service_abc123"
+const EMAILJS_TEMPLATE_ID = "YOUR_TEMPLATE_ID";  // жш: "template_xyz789"
+const EMAILJS_PUBLIC_KEY  = "YOUR_PUBLIC_KEY";   // жш: "aBcDeFgHiJkLmNoP"
+// ────────────────────────────────────────────────────────────────
 
 /* ─── Google Fonts ─── */
 const fontLink = document.createElement("link");
@@ -978,6 +986,34 @@ function AboutPage() {
 function ContactPage() {
   const { contact } = settingsData;
   const [form, setForm] = useState({ name: "", email: "", subject: "", message: "" });
+  const [status, setStatus] = useState("idle"); // idle | sending | success | error
+
+  const handleSubmit = async () => {
+    if (!form.name || !form.email || !form.message) {
+      setStatus("empty");
+      return;
+    }
+    setStatus("sending");
+    try {
+      await emailjs.send(
+        EMAILJS_SERVICE_ID,
+        EMAILJS_TEMPLATE_ID,
+        {
+          from_name:    form.name,
+          from_email:   form.email,
+          subject:      form.subject || "(гарчиггүй)",
+          message:      form.message,
+          to_email:     "lingolabmongolia@gmail.com",
+        },
+        EMAILJS_PUBLIC_KEY
+      );
+      setStatus("success");
+      setForm({ name: "", email: "", subject: "", message: "" });
+    } catch {
+      setStatus("error");
+    }
+  };
+
   return (
     <div>
       {/* Hero */}
@@ -1110,7 +1146,23 @@ function ContactPage() {
               onBlur={e => { e.target.style.boxShadow = "none"; }}
             />
           </div>
-          <Btn style={{ padding: "0.85rem 2.5rem" }}>Илгээх &nbsp;➤</Btn>
+          {status === "empty" && (
+            <p style={{ fontSize: "0.8rem", color: "#dc2626", marginBottom: "0.75rem" }}>Нэр, и-мэйл, зурвасаа бөглөнө үү.</p>
+          )}
+          {status === "error" && (
+            <p style={{ fontSize: "0.8rem", color: "#dc2626", marginBottom: "0.75rem" }}>Алдаа гарлаа. Дахин оролдоно уу.</p>
+          )}
+          {status === "success" ? (
+            <div style={{ textAlign: "center", padding: "1.5rem", background: "#f0fdf4", borderRadius: T.radius.lg }}>
+              <div style={{ fontSize: "2rem", marginBottom: "0.5rem" }}>✅</div>
+              <h4 style={{ fontFamily: "'Lexend'", fontWeight: 700, marginBottom: "0.25rem" }}>Амжилттай илгээлээ!</h4>
+              <p style={{ fontSize: "0.85rem", color: T.onSurfaceVariant }}>Удахгүй холбоо барина.</p>
+            </div>
+          ) : (
+            <Btn onClick={handleSubmit} style={{ padding: "0.85rem 2.5rem" }}>
+              {status === "sending" ? "Илгээж байна..." : "Илгээх \u00a0➤"}
+            </Btn>
+          )}
         </Card>
       </section>
 
