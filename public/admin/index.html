@@ -1,11 +1,330 @@
 <!DOCTYPE html>
-<html>
-  <head>
-    <meta charset="utf-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>LingoLab Admin</title>
-  </head>
-  <body>
-    <script src="https://unpkg.com/decap-cms@^3.0.0/dist/decap-cms.js"></script>
-  </body>
+<html lang="mn">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>LingoLab Admin</title>
+  <link href="https://fonts.googleapis.com/css2?family=Lexend:wght@400;600;700&display=swap" rel="stylesheet" />
+  <style>
+    * { margin: 0; padding: 0; box-sizing: border-box; }
+    body { font-family: 'Lexend', sans-serif; background: #f3f7fb; color: #2a2f32; min-height: 100vh; }
+    .login-wrap { display: flex; align-items: center; justify-content: center; min-height: 100vh; }
+    .login-box { background: white; border-radius: 1.5rem; padding: 2.5rem; width: 400px; box-shadow: 0 8px 40px rgba(0,0,0,0.08); }
+    .login-box h1 { font-size: 1.5rem; margin-bottom: 0.5rem; }
+    .login-box p { color: #5f6568; font-size: 0.875rem; margin-bottom: 1.5rem; }
+    input, textarea, select { width: 100%; padding: 0.75rem 1rem; border: 1.5px solid #dde3ea; border-radius: 0.75rem; font-family: 'Lexend', sans-serif; font-size: 0.875rem; outline: none; transition: border 0.2s; background: #f3f7fb; }
+    input:focus, textarea:focus { border-color: #0051d1; background: white; }
+    textarea { resize: vertical; min-height: 80px; }
+    button { cursor: pointer; font-family: 'Lexend', sans-serif; font-weight: 600; border: none; border-radius: 0.75rem; padding: 0.75rem 1.5rem; transition: all 0.2s; }
+    .btn-primary { background: #0051d1; color: white; width: 100%; margin-top: 1rem; font-size: 0.9rem; }
+    .btn-primary:hover { background: #0040a8; }
+    .btn-save { background: #0051d1; color: white; padding: 0.6rem 1.5rem; font-size: 0.85rem; }
+    .btn-save:hover { background: #0040a8; }
+    .btn-danger { background: #fee2e2; color: #dc2626; padding: 0.5rem 1rem; font-size: 0.8rem; }
+    .btn-add { background: #ecf1f6; color: #2a2f32; padding: 0.5rem 1rem; font-size: 0.8rem; margin-top: 0.5rem; }
+    .header { background: white; padding: 1rem 2rem; display: flex; align-items: center; justify-content: space-between; box-shadow: 0 2px 12px rgba(0,0,0,0.06); position: sticky; top: 0; z-index: 100; }
+    .header h2 { font-size: 1.1rem; color: #0051d1; }
+    .logout-btn { background: #f3f7fb; color: #5f6568; padding: 0.5rem 1rem; font-size: 0.8rem; border-radius: 0.5rem; }
+    .layout { display: flex; min-height: calc(100vh - 60px); }
+    .sidebar { width: 220px; background: white; padding: 1.5rem 1rem; border-right: 1px solid #ecf1f6; flex-shrink: 0; }
+    .nav-item { padding: 0.65rem 1rem; border-radius: 0.75rem; cursor: pointer; font-size: 0.875rem; margin-bottom: 0.25rem; transition: all 0.2s; }
+    .nav-item:hover { background: #f3f7fb; }
+    .nav-item.active { background: #0051d1; color: white; }
+    .content { flex: 1; padding: 2rem; max-width: 900px; }
+    .section-title { font-size: 1.25rem; font-weight: 700; margin-bottom: 1.5rem; }
+    .card { background: white; border-radius: 1rem; padding: 1.5rem; margin-bottom: 1.5rem; box-shadow: 0 2px 12px rgba(0,0,0,0.04); }
+    .card-title { font-size: 0.9rem; font-weight: 700; color: #5f6568; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 1rem; }
+    .field { margin-bottom: 1rem; }
+    .label { font-size: 0.75rem; font-weight: 600; color: #5f6568; text-transform: uppercase; letter-spacing: 0.05em; margin-bottom: 0.35rem; display: block; }
+    .list-item { background: #f3f7fb; border-radius: 0.75rem; padding: 1rem; margin-bottom: 0.75rem; }
+    .list-item-header { display: flex; justify-content: space-between; align-items: center; margin-bottom: 0.75rem; font-size: 0.8rem; font-weight: 600; color: #5f6568; }
+    .grid2 { display: grid; grid-template-columns: 1fr 1fr; gap: 1rem; }
+    .save-bar { position: sticky; bottom: 0; background: white; padding: 1rem 2rem; border-top: 1px solid #ecf1f6; display: flex; align-items: center; gap: 1rem; }
+    .save-status { font-size: 0.85rem; color: #5f6568; }
+    .save-status.success { color: #16a34a; }
+    .save-status.error { color: #dc2626; }
+    .hidden { display: none !important; }
+    .logo { font-size: 1.2rem; font-weight: 700; color: #0051d1; }
+  </style>
+</head>
+<body>
+
+<!-- LOGIN -->
+<div class="login-wrap" id="loginPage">
+  <div class="login-box">
+    <div class="logo">LingoLab Admin</div>
+    <p style="margin-top:0.5rem">GitHub Personal Access Token оруулна уу</p>
+    <div class="field" style="margin-top:1.5rem">
+      <label class="label">GitHub Token</label>
+      <input type="password" id="tokenInput" placeholder="ghp_..." />
+    </div>
+    <button class="btn-primary" onclick="login()">Нэвтрэх</button>
+    <p id="loginError" style="color:#dc2626;font-size:0.8rem;margin-top:0.75rem;display:none"></p>
+  </div>
+</div>
+
+<!-- ADMIN -->
+<div id="adminPage" class="hidden">
+  <div class="header">
+    <span class="logo">LingoLab Admin</span>
+    <div style="display:flex;align-items:center;gap:1rem">
+      <span style="font-size:0.8rem;color:#5f6568" id="repoInfo"></span>
+      <button class="logout-btn" onclick="logout()">Гарах</button>
+    </div>
+  </div>
+  <div class="layout">
+    <div class="sidebar">
+      <div class="nav-item active" onclick="showTab('settings')" id="nav-settings">⚙️ Ерөнхий</div>
+      <div class="nav-item" onclick="showTab('home')" id="nav-home">🏠 Нүүр хуудас</div>
+      <div class="nav-item" onclick="showTab('news')" id="nav-news">📰 Мэдээ</div>
+      <div class="nav-item" onclick="showTab('events')" id="nav-events">🎉 Үйл ажиллагаа</div>
+      <div class="nav-item" onclick="showTab('about')" id="nav-about">ℹ️ Бидний тухай</div>
+    </div>
+    <div style="flex:1;overflow-y:auto">
+      <div class="content" id="tabContent"></div>
+      <div class="save-bar">
+        <button class="btn-save" onclick="saveChanges()">💾 Хадгалах</button>
+        <span class="save-status" id="saveStatus"></span>
+      </div>
+    </div>
+  </div>
+</div>
+
+<script>
+const REPO = 'anestar324-a11y/lingolab';
+const BRANCH = 'main';
+let TOKEN = '';
+let currentTab = 'settings';
+let contentData = {};
+let fileShas = {};
+
+function login() {
+  const token = document.getElementById('tokenInput').value.trim();
+  if (!token) return;
+  TOKEN = token;
+  localStorage.setItem('ll_admin_token', token);
+  initAdmin();
+}
+
+function logout() {
+  localStorage.removeItem('ll_admin_token');
+  TOKEN = '';
+  document.getElementById('loginPage').classList.remove('hidden');
+  document.getElementById('adminPage').classList.add('hidden');
+}
+
+async function initAdmin() {
+  try {
+    const res = await ghGet(`repos/${REPO}`);
+    document.getElementById('repoInfo').textContent = res.full_name;
+    document.getElementById('loginPage').classList.add('hidden');
+    document.getElementById('adminPage').classList.remove('hidden');
+    await loadAllContent();
+    showTab('settings');
+  } catch(e) {
+    document.getElementById('loginError').textContent = 'Token буруу байна. Дахин оролдоно уу.';
+    document.getElementById('loginError').style.display = 'block';
+  }
+}
+
+async function ghGet(path) {
+  const res = await fetch(`https://api.github.com/${path}`, {
+    headers: { Authorization: `token ${TOKEN}`, Accept: 'application/vnd.github.v3+json' }
+  });
+  if (!res.ok) throw new Error(await res.text());
+  return res.json();
+}
+
+async function loadFile(path) {
+  const data = await ghGet(`repos/${REPO}/contents/${path}?ref=${BRANCH}`);
+  fileShas[path] = data.sha;
+  return JSON.parse(atob(data.content.replace(/\n/g, '')));
+}
+
+async function saveFile(path, content) {
+  const body = { message: `Update ${path}`, content: btoa(unescape(encodeURIComponent(JSON.stringify(content, null, 2)))), sha: fileShas[path], branch: BRANCH };
+  const res = await fetch(`https://api.github.com/repos/${REPO}/contents/${path}`, {
+    method: 'PUT', headers: { Authorization: `token ${TOKEN}`, 'Content-Type': 'application/json' },
+    body: JSON.stringify(body)
+  });
+  if (!res.ok) throw new Error(await res.text());
+  const data = await res.json();
+  fileShas[path] = data.content.sha;
+}
+
+async function loadAllContent() {
+  const files = ['src/content/settings.json','src/content/home.json','src/content/news.json','src/content/events.json','src/content/about.json'];
+  for (const f of files) {
+    const key = f.replace('src/content/','').replace('.json','');
+    contentData[key] = await loadFile(f);
+  }
+}
+
+function showTab(tab) {
+  currentTab = tab;
+  document.querySelectorAll('.nav-item').forEach(el => el.classList.remove('active'));
+  document.getElementById('nav-'+tab).classList.add('active');
+  renderTab(tab);
+}
+
+function renderTab(tab) {
+  const el = document.getElementById('tabContent');
+  const d = contentData[tab];
+  if (!d) return;
+  let html = `<div class="section-title">${{settings:'⚙️ Ерөнхий тохиргоо',home:'🏠 Нүүр хуудас',news:'📰 Мэдээ',events:'🎉 Үйл ажиллагаа',about:'ℹ️ Бидний тухай'}[tab]}</div>`;
+
+  if (tab === 'settings') {
+    html += card('Холбоо барих', `
+      ${field('Утас','settings.contact.phone',d.contact.phone)}
+      ${field('И-мэйл','settings.contact.email',d.contact.email)}
+      ${field('Хаяг','settings.contact.address',d.contact.address,'textarea')}
+    `);
+    html += card('Footer', `
+      ${field('Тайлбар','settings.footer.desc',d.footer.desc,'textarea')}
+      ${field('Copyright','settings.footer.copyright',d.footer.copyright)}
+    `);
+    html += card('Сошиал хаягууд', `
+      ${field('Facebook URL','settings.social.facebook',d.social.facebook||'')}
+      ${field('Instagram URL','settings.social.instagram',d.social.instagram||'')}
+      ${field('YouTube URL','settings.social.youtube',d.social.youtube||'')}
+    `);
+  }
+
+  if (tab === 'home') {
+    html += card('Hero хэсэг', `
+      <div class="grid2">
+        ${field('Badge','home.hero.badge',d.hero.badge)}
+        ${field('Суралцагчдын тоо','home.hero.studentCount',d.hero.studentCount)}
+      </div>
+      ${field('Гарчиг','home.hero.title',d.hero.title)}
+      ${field('Гарчиг (өнгөт)','home.hero.titleHighlight',d.hero.titleHighlight)}
+      ${field('Тайлбар','home.hero.description',d.hero.description,'textarea')}
+      <div class="grid2">
+        ${field('Үндсэн товч','home.hero.ctaPrimary',d.hero.ctaPrimary)}
+        ${field('Дэд товч','home.hero.ctaSecondary',d.hero.ctaSecondary)}
+      </div>
+    `);
+    html += card('Хөтөлбөрүүд', listEditor('home.programs', d.programs, ['icon:Emoji','title:Нэр','desc:Тайлбар|textarea']));
+    html += card('Яагаад бидэн', listEditor('home.whyUs', d.whyUs, ['icon:Emoji','title:Гарчиг','desc:Тайлбар|textarea']));
+    html += card('Эцэг эхийн сэтгэгдэл', listEditor('home.testimonials', d.testimonials, ['name:Нэр','role:Үүрэг','text:Сэтгэгдэл|textarea']));
+    html += card('CTA хэсэг', `
+      ${field('Гарчиг','home.cta.title',d.cta.title,'textarea')}
+      ${field('Тайлбар','home.cta.desc',d.cta.desc)}
+      ${field('Товчны текст','home.cta.btnText',d.cta.btnText)}
+    `);
+  }
+
+  if (tab === 'news') {
+    html += card('Мэдээнүүд', listEditor('news.articles', d.articles, ['tag:Шошго','date:Огноо','title:Гарчиг','desc:Тайлбар|textarea']));
+  }
+
+  if (tab === 'events') {
+    html += card('Эвентүүд', listEditor('events.events', d.events, ['icon:Emoji','title:Гарчиг','type:Төрөл','date:Огноо','time:Цаг','desc:Тайлбар|textarea']));
+    html += card('Хөтөлбөрүүд', listEditor('events.programs', d.programs, ['name:Нэр','age:Нас','price:Үнэ','desc:Тайлбар|textarea']));
+  }
+
+  if (tab === 'about') {
+    html += card('Hero', `
+      ${field('Badge','about.hero.badge',d.hero.badge)}
+      ${field('Гарчиг','about.hero.title',d.hero.title)}
+      ${field('Гарчиг (өнгөт)','about.hero.titleHighlight',d.hero.titleHighlight)}
+      ${field('Тайлбар','about.hero.desc',d.hero.desc,'textarea')}
+    `);
+    html += card('Бидний түүх', `
+      ${field('Байгуулагдсан он','about.story.foundedYear',d.story.foundedYear)}
+      ${field('1-р хэсэг','about.story.paragraph1',d.story.paragraph1,'textarea')}
+      ${field('2-р хэсэг','about.story.paragraph2',d.story.paragraph2,'textarea')}
+    `);
+    html += card('Үнэт зүйлс', listEditor('about.values', d.values, ['icon:Emoji','title:Гарчиг','desc:Тайлбар|textarea']));
+    html += card('Баг хамт олон', listEditor('about.team', d.team, ['name:Нэр','role:Албан тушаал']));
+  }
+
+  el.innerHTML = html;
+}
+
+function card(title, content) {
+  return `<div class="card"><div class="card-title">${title}</div>${content}</div>`;
+}
+
+function field(label, path, value, type='input') {
+  const safe = value ? String(value).replace(/"/g,'&quot;') : '';
+  if (type === 'textarea') {
+    return `<div class="field"><label class="label">${label}</label><textarea onchange="setVal('${path}',this.value)">${safe}</textarea></div>`;
+  }
+  return `<div class="field"><label class="label">${label}</label><input type="text" value="${safe}" onchange="setVal('${path}',this.value)" /></div>`;
+}
+
+function listEditor(path, items, fields) {
+  if (!items) return '';
+  let html = `<div id="list-${path.replace(/\./g,'-')}">`;
+  items.forEach((item, i) => {
+    html += `<div class="list-item"><div class="list-item-header"><span>${i+1}-р зүйл</span><button class="btn-danger" onclick="removeItem('${path}',${i})">Устгах</button></div>`;
+    fields.forEach(f => {
+      const [key, rest] = f.split(':');
+      const [lbl, type='input'] = rest.split('|');
+      const val = item[key] !== undefined ? String(item[key]) : '';
+      html += field(lbl, `${path}[${i}].${key}`, val, type === 'textarea' ? 'textarea' : 'input');
+    });
+    html += '</div>';
+  });
+  html += `</div><button class="btn-add" onclick="addItem('${path}')">+ Нэмэх</button>`;
+  return html;
+}
+
+function setVal(path, value) {
+  const parts = path.split('.');
+  const tab = parts[0];
+  let obj = contentData[tab];
+  const remaining = parts.slice(1);
+  for (let i = 0; i < remaining.length - 1; i++) {
+    const m = remaining[i].match(/^(\w+)\[(\d+)\]$/);
+    if (m) obj = obj[m[1]][parseInt(m[2])];
+    else obj = obj[remaining[i]];
+  }
+  const last = remaining[remaining.length - 1];
+  const m = last.match(/^(\w+)\[(\d+)\]\.(\w+)$/);
+  if (m) obj[m[1]][parseInt(m[2])][m[3]] = value;
+  else obj[last] = value;
+}
+
+function removeItem(path, index) {
+  const parts = path.split('.');
+  const tab = parts[0];
+  let obj = contentData[tab];
+  for (let i = 1; i < parts.length; i++) obj = obj[parts[i]];
+  obj.splice(index, 1);
+  renderTab(tab);
+}
+
+function addItem(path) {
+  const parts = path.split('.');
+  const tab = parts[0];
+  let obj = contentData[tab];
+  for (let i = 1; i < parts.length; i++) obj = obj[parts[i]];
+  obj.push({});
+  renderTab(tab);
+}
+
+async function saveChanges() {
+  const statusEl = document.getElementById('saveStatus');
+  statusEl.textContent = 'Хадгалж байна...';
+  statusEl.className = 'save-status';
+  try {
+    const fileMap = { settings:'src/content/settings.json', home:'src/content/home.json', news:'src/content/news.json', events:'src/content/events.json', about:'src/content/about.json' };
+    await saveFile(fileMap[currentTab], contentData[currentTab]);
+    statusEl.textContent = '✓ Амжилттай хадгаллаа! Vercel дахин deploy хийнэ.';
+    statusEl.className = 'save-status success';
+  } catch(e) {
+    statusEl.textContent = '✗ Алдаа гарлаа: ' + e.message;
+    statusEl.className = 'save-status error';
+  }
+}
+
+// Auto-login
+window.onload = () => {
+  const saved = localStorage.getItem('ll_admin_token');
+  if (saved) { TOKEN = saved; document.getElementById('tokenInput').value = saved; initAdmin(); }
+};
+</script>
+</body>
 </html>
