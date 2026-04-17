@@ -157,8 +157,14 @@ function Footer({ onNav }) {
           </div>
           <div>
             <h4 style={{ fontSize: "0.85rem", fontWeight: 700, marginBottom: "0.75rem" }}>Сошиал</h4>
-            {["Фэйсбүүк", "Инстаграм", "Ютүб"].map((t, i) => (
-              <p key={i} style={{ fontSize: "0.8rem", color: T.onSurfaceVariant, marginBottom: "0.4rem", cursor: "pointer" }}>{t}</p>
+            {[
+              { label: "Фэйсбүүк", url: settingsData.social.facebook },
+              { label: "Инстаграм", url: settingsData.social.instagram },
+              { label: "Тикток", url: settingsData.social.tiktok },
+            ].map((s, i) => (
+              s.url
+                ? <a key={i} href={s.url} target="_blank" rel="noreferrer" style={{ display: "block", fontSize: "0.8rem", color: T.primary, marginBottom: "0.4rem", cursor: "pointer" }}>{s.label}</a>
+                : <p key={i} style={{ fontSize: "0.8rem", color: T.onSurfaceVariant, marginBottom: "0.4rem" }}>{s.label}</p>
             ))}
           </div>
         </div>
@@ -933,8 +939,14 @@ function ContactPage() {
               🔗 Олон нийтийн сүлжээ
             </h3>
             <div style={{ display: "flex", gap: "0.5rem", flexWrap: "wrap" }}>
-              {["Фэйсбүүк", "Инстаграм", "Ютүб"].map(s => (
-                <Chip key={s} color={T.surfaceContainerLow} textColor={T.onSurface}>{s}</Chip>
+              {[
+                { label: "Фэйсбүүк", url: contact.social?.facebook || settingsData.social.facebook },
+                { label: "Инстаграм", url: contact.social?.instagram || settingsData.social.instagram },
+                { label: "Тикток", url: contact.social?.tiktok || settingsData.social.tiktok },
+              ].map(s => (
+                s.url
+                  ? <a key={s.label} href={s.url} target="_blank" rel="noreferrer" style={{ textDecoration: "none" }}><Chip color={T.primary} textColor="#fff">{s.label}</Chip></a>
+                  : <Chip key={s.label} color={T.surfaceContainerLow} textColor={T.onSurface}>{s.label}</Chip>
               ))}
             </div>
           </Card>
