@@ -564,6 +564,7 @@ function NewsPage() {
    PAGE: EVENTS / ҮЙЛ АЖИЛЛАГАА (matches Image 1 layout)
    ════════════════════════════════════════════════════════════════ */
 function EventsPage() {
+  const [activeTab, setActiveTab] = useState("events");
   return (
     <div>
       {/* Hero */}
@@ -601,8 +602,27 @@ function EventsPage() {
         </div>
       </section>
 
+      {/* Tab Navigation */}
+      <div style={{ maxWidth: 1200, margin: "0 auto", padding: "0 2rem" }}>
+        <div style={{ display: "flex", gap: "0.5rem", borderBottom: `2px solid ${T.outlineVariant}`, marginBottom: "2rem" }}>
+          {[
+            { key: "events", label: "🎨 Бүтээлч эвентүүд" },
+            { key: "programs", label: "📚 Сургалтууд" },
+          ].map(tab => (
+            <button key={tab.key} onClick={() => setActiveTab(tab.key)} style={{
+              background: "none", border: "none", cursor: "pointer",
+              padding: "0.85rem 1.75rem",
+              fontFamily: "'Lexend'", fontWeight: 600, fontSize: "0.95rem",
+              color: activeTab === tab.key ? T.primary : T.onSurfaceVariant,
+              borderBottom: activeTab === tab.key ? `3px solid ${T.primary}` : "3px solid transparent",
+              marginBottom: "-2px", transition: "all 0.2s",
+            }}>{tab.label}</button>
+          ))}
+        </div>
+      </div>
+
       {/* Events Section */}
-      <section style={{ padding: "4rem 2rem", maxWidth: 1200, margin: "0 auto" }}>
+      {activeTab === "events" && <section style={{ padding: "0 2rem 4rem", maxWidth: 1200, margin: "0 auto" }}>
         <h2 style={{ fontFamily: "'Lexend'", fontSize: "1.75rem", fontWeight: 700, marginBottom: "0.5rem" }}>Бүтээлч эвентүүд</h2>
         <p style={{ color: T.onSurfaceVariant, marginBottom: "2.5rem" }}>Удахгүй болох мастер классууд болон тусламжийн хөтөлбөрүүд</p>
 
@@ -667,10 +687,10 @@ function EventsPage() {
             </div>
           </Card>
         </div>
-      </section>
+      </section>}
 
       {/* Programs Section */}
-      <section style={{ padding: "4rem 2rem", background: T.surfaceContainerLow }}>
+      {activeTab === "programs" && <section style={{ padding: "2rem 2rem 4rem", background: T.surfaceContainerLow }}>
         <div style={{ maxWidth: 1200, margin: "0 auto", textAlign: "center" }}>
           <h2 style={{ fontFamily: "'Lexend'", fontSize: "2rem", fontWeight: 700, marginBottom: "0.5rem" }}>Хичээлийн хөтөлбөрүүд</h2>
           <p style={{ color: T.onSurfaceVariant, marginBottom: "3rem", maxWidth: 500, margin: "0.5rem auto 3rem" }}>
@@ -725,7 +745,7 @@ function EventsPage() {
             ))}
           </div>
         </div>
-      </section>
+      </section>}
 
       {/* Newsletter */}
       <section style={{ padding: "4rem 2rem" }}>
